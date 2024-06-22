@@ -1,25 +1,23 @@
-# Set the base image to Node 17.1.0-alpine
-FROM node:17.1.0-alpine
+# Use the official Node.js image as the base image
+FROM node:14-alpine
 
-# Set the working directory
-WORKDIR /app/medusa
+# Set the working directory in the container
+WORKDIR /app
 
-# Copy the necessary files
-COPY package.json .
-COPY develop.sh .
-COPY yarn.* .
-
-# Run the apk update command to update package information
-RUN apk update
+# Copy package.json and package-lock.json files to the container
+COPY package.json package-lock.json ./
 
 # Install dependencies
-RUN yarn --network-timeout 1000000
+RUN npm install
 
-# Install the medusa-cli
-RUN yarn global add @medusajs/medusa-cli@latest
-
-# Add the remaining files
+# Copy the Next.js project into the container
 COPY . .
 
-# Set the default command to run when the container starts
-ENTRYPOINT ["sh", "develop.sh"]
+# Build the Next.js application
+RUN npm run build
+
+# Expose the port Next.js runs on
+EXPOSE 3000
+
+# Command to run Next.js application
+CMD ["npm", "start"]
