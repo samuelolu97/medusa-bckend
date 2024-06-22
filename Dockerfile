@@ -1,13 +1,24 @@
 FROM node:lts
 
+WORKDIR /
+
+COPY package.json .
+COPY tsconfig.json .
+
+RUN apt-get update
+
+RUN apt-get install -y python
+
 RUN npm install -g npm@latest
 
-RUN npm i @medusajs/medusa-cli@latest -g
+RUN npm global -g @medusajs/medusa-cli@latest
 
+COPY . .
+
+RUN npm install
 
 EXPOSE 7000
-
-run npm run start
+# ENTRYPOINT ["./develop.sh", "develop"]
 
 # Define the command to run the app
 CMD [ "npm", "start" ]
